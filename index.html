@@ -108,6 +108,12 @@
       const result = document.getElementById("result");
       result.style.display = "block";
 
+      // Same name rule
+      if (name1Lower && name1Lower === name2Lower) {
+        result.textContent = "Oi stop playing with yourself! Please acquire a friend.";
+        return;
+      }
+      
       // Special rule: Tristan always loses
       if (name1Lower === "tristan" && name2Lower !== "tristan") {
         result.textContent = name2 + " wins!";
@@ -116,11 +122,6 @@
 
       if (name2Lower === "tristan" && name1Lower !== "tristan") {
         result.textContent = name1 + " wins!";
-        return;
-      }
-
-      if (name1Lower === "tristan" && name2Lower === "tristan") {
-        result.textContent = "You smell!";
         return;
       }
 
@@ -135,9 +136,9 @@
       const diff2 = Math.abs(g2 - secretNumber);
 
       if (diff1 < diff2) {
-        result.textContent = name1 + " is closer.";
+        result.textContent = name1 + " wins!";
       } else if (diff2 < diff1) {
-        result.textContent = name2 + " is closer.";
+        result.textContent = name2 + " wins!";
       } else {
         result.textContent = "It is a tie between " + name1 + " and " + name2 + ".";
       }
@@ -156,5 +157,6 @@
   </script>
 </body>
 </html>
+
 
 
