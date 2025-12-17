@@ -12,7 +12,7 @@
       padding: 20px;
     }
     .box {
-      max-width: 500px;
+      max-width: 520px;
       margin: auto;
       background: white;
       padding: 20px;
@@ -24,14 +24,20 @@
     label {
       display: block;
       margin-top: 12px;
+      font-weight: 600;
     }
     input {
       width: 100%;
       padding: 8px;
       margin-top: 4px;
+      box-sizing: border-box;
+    }
+    .btnrow {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
     }
     button {
-      margin-top: 16px;
       padding: 10px;
       width: 100%;
       font-size: 16px;
@@ -42,24 +48,41 @@
       padding: 12px;
       background: #eef2ff;
       border-radius: 6px;
+      display: none;
+    }
+    .hint {
+      font-size: 14px;
+      color: #555;
+      margin-top: 6px;
     }
   </style>
 </head>
 
 <body>
   <div class="box">
-    <h1>Guess the number of sweets</h1>
-    <p>Enter two guesses. The page will tell you which one is closer.</p>
+    <h1>Guess the number of sweetsin the jar</h1>
+    <p>Enter two names and a guess each. Whoever loses must spin the shot roulette wheel!</p>
 
-    <label>First guess</label>
-    <input type="number" id="guess1">
+    <label for="name1">Name for guess 1</label>
+    <input type="text" id="name1" placeholder="e.g. Alex" autocomplete="off">
 
-    <label>Second guess</label>
-    <input type="number" id="guess2">
+    <label for="guess1">Guess 1</label>
+    <input type="number" id="guess1" placeholder="e.g. 150">
 
-    <button onclick="compare()">Compare guesses</button>
+    <label for="name2">Name for guess 2</label>
+    <input type="text" id="name2" placeholder="e.g. Sam" autocomplete="off">
 
-    <div id="result" class="result" style="display:none;"></div>
+    <label for="guess2">Guess 2</label>
+    <input type="number" id="guess2" placeholder="e.g. 210">
+
+    <div class="btnrow">
+      <button type="button" onclick="compare()">Compare</button>
+      <button type="button" onclick="resetRound()">Reset round</button>
+    </div>
+
+    <div class="hint">Reset clears the guesses and hides the result.</div>
+
+    <div id="result" class="result"></div>
   </div>
 
   <script>
@@ -67,31 +90,70 @@
     const secretNumber = 80;
 
     function compare() {
-      const g1 = Number(document.getElementById("guess1").value);
-      const g2 = Number(document.getElementById("guess2").value);
-      const result = document.getElementById("result");
+      const name1Raw = document.getElementById("name1").value.trim();
+      const name2Raw = document.getElementById("name2").value.trim();
 
-      if (!g1 || !g2) {
-        result.style.display = "block";
+      const name1 = name1Raw || "First guess";
+      const name2 = name2Raw || "Second guess";
+
+      const name1Lower = name1Raw.toLowerCase();
+      const name2Lower = name2Raw.toLowerCase();
+
+      const g1raw = document.getElementById("guess1").value;
+      const g2raw = document.getElementById("guess2").value;
+
+      const g1 = Number(g1raw);
+      const g2 = Number(g2raw);
+
+      const result = document.getElementById("result");
+      result.style.display = "block";
+
+      // Special rule: Tristan always loses
+      if (name1Lower === "tristan" && name2Lower !== "tristan") {
+        result.textContent = name2 + " wins!";
+        return;
+      }
+
+      if (name2Lower === "tristan" && name1Lower !== "tristan") {
+        result.textContent = name1 + " wins!";
+        return;
+      }
+
+      if (name1Lower === "tristan" && name2Lower === "tristan") {
+        result.textContent = "You smell!";
+        return;
+      }
+
+      // Validate guesses
+      if (g1raw === "" || g2raw === "" || Number.isNaN(g1) || Number.isNaN(g2)) {
         result.textContent = "Please enter both guesses.";
         return;
       }
 
+      // Compare guesses
       const diff1 = Math.abs(g1 - secretNumber);
       const diff2 = Math.abs(g2 - secretNumber);
 
-      let message;
       if (diff1 < diff2) {
-        message = "The first guess is closer.";
+        result.textContent = name1 + " is closer.";
       } else if (diff2 < diff1) {
-        message = "The second guess is closer.";
+        result.textContent = name2 + " is closer.";
       } else {
-        message = "It is a tie.";
+        result.textContent = "It is a tie between " + name1 + " and " + name2 + ".";
       }
+    }
 
-      result.style.display = "block";
-      result.textContent = message;
+    function resetRound() {
+      document.getElementById("guess1").value = "";
+      document.getElementById("guess2").value = "";
+
+      const result = document.getElementById("result");
+      result.style.display = "none";
+      result.textContent = "";
+
+      document.getElementById("guess1").focus();
     }
   </script>
 </body>
 </html>
+
